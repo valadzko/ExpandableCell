@@ -32,14 +32,18 @@ open class ExpandableCell: UITableViewCell {
     }
     
     func initView() {
-        arrowImageView.image = UIImage(named: "expandableCell_arrow", in: Bundle(for: ExpandableCell.self), compatibleWith: nil)
+        if #available(iOS 13.0, *) {
+            arrowImageView.image = UIImage(systemName: "chevron.right")?.withTintColor(.red, renderingMode: .alwaysTemplate)
+        } else {
+            arrowImageView.image = UIImage(named: "expandableCell_arrow", in: Bundle(for: ExpandableCell.self), compatibleWith: nil)
+        }
         self.contentView.addSubview(arrowImageView)
     }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
-        let widthConstraint = NSLayoutConstraint(item: arrowImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: 22)
-        let heightConstraint = NSLayoutConstraint(item: arrowImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 11)
+        let widthConstraint = NSLayoutConstraint(item: arrowImageView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .width, multiplier: 1, constant: 14)
+        let heightConstraint = NSLayoutConstraint(item: arrowImageView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .height, multiplier: 1, constant: 20)
         let centerVerticallyConstraint = NSLayoutConstraint(item: arrowImageView, attribute: .centerY, relatedBy: .equal, toItem: contentView, attribute: .centerY, multiplier: 1, constant: 0)
         let trailingConstraint = NSLayoutConstraint(item: arrowImageView, attribute: .trailing, relatedBy: .equal, toItem: contentView, attribute: .trailing, multiplier: 1, constant: -trailingMargin)
         arrowImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +55,11 @@ open class ExpandableCell: UITableViewCell {
         self.initialExpansionAllowed = false
         if highlightAnimation == .animated {
             UIView.animate(withDuration: 0.3) {[weak self] in
-                self?.arrowImageView.layer.transform = CATransform3DMakeRotation(CGFloat(Double.pi), 1.0, 0.0, 0.0)
+                var rotationAngle = Double.pi
+                if #available(iOS 13.0, *) {
+                    rotationAngle = Double.pi/2
+                }
+                self?.arrowImageView.layer.transform = CATransform3DMakeRotation(CGFloat(rotationAngle), 0.0, 0.0, 1.0)
             }
         }
     }
@@ -60,7 +68,11 @@ open class ExpandableCell: UITableViewCell {
         self.isOpen = false
         if highlightAnimation == .animated {
             UIView.animate(withDuration: 0.3) {[weak self] in
-                self?.arrowImageView.layer.transform = CATransform3DMakeRotation(CGFloat(Double.pi), 0.0, 0.0, 0.0)
+                var rotationAngle = Double.pi
+                if #available(iOS 13.0, *) {
+                    rotationAngle = Double.pi/2
+                }
+                self?.arrowImageView.layer.transform = CATransform3DMakeRotation(CGFloat(rotationAngle), 0.0, 0.0, 0.0)
             }
         }
     }
